@@ -63,7 +63,8 @@ def load_roberta_results(csv_path: str) -> pd.DataFrame:
     df = pd.read_csv(csv_path)
     df["max_ans"] = df[["ans0", "ans1", "ans2"]].astype(float).idxmax(axis=1)
     df = df.drop(columns=["ans0", "ans1", "ans2"])
-    df = df.pivot_table(index=["index", "cat"], columns="model", values="max_ans").reset_index()
+    # pivot so that we have one column per model; using 'first' preserves string labels
+    df = df.pivot_table(index=["index", "cat"], columns="model", values="max_ans", aggfunc="first").reset_index()
     df = df.rename(columns={"index": "example_id", "cat": "category"})
     return df
 
